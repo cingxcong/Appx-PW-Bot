@@ -83,3 +83,10 @@ A fixture-driven test suite must prove that:
 - 401/403 does not trigger an unauthenticated retry
 - pagination and nested folders are fully traversed
 - export counts reconcile with the manifest
+
+
+## TXT manifest intake
+
+`exporters/txt_input.py` parses user-supplied TXT manifests independently of provider adapters. It accepts either a raw HTTP(S) URL per line or `Title: URL`, ignores blank/comment/non-URL lines, rejects non-HTTP schemes and URLs containing embedded credentials, deduplicates exact URLs, and enforces 2 MiB / 10,000-line limits. It preserves the supplied URL including its query string; it does not fetch or rewrite it.
+
+The parser is a preprocessing stage only. A provider adapter must still establish that a supplied URL/resource belongs to the authenticated user's authorized account before any export or Telegram upload. Do not use the parser as an entitlement check.
