@@ -86,10 +86,10 @@ async def start(bot, message):
       InlineKeyboardButton("🚀 Physics Wallah without Purchase 🚀", callback_data="pwwp")
     ],
     [
-      InlineKeyboardButton("📘 Classplus without Purchase 📘", callback_data="cpwp")
+      InlineKeyboardButton("📘 Classplus (authorized access only) 📘", callback_data="cpwp")
     ],
     [
-      InlineKeyboardButton("📒 Appx Without Purchase 📒", callback_data="appxwp")
+      InlineKeyboardButton("📒 Appx (authorized access only) 📒", callback_data="appxwp")
     ]
   ]
 
@@ -910,6 +910,9 @@ async def cpwp_callback(bot, callback_query):
     THREADPOOL.submit(asyncio.run, process_cpwp(bot, callback_query.message, user_id))
     
 async def process_cpwp(bot: Client, m: Message, user_id: int):
+    # Legacy preview-based extraction is disabled pending an entitled-account adapter.
+    await m.reply_text("Classplus export is temporarily disabled while the authorized-account exporter is being implemented. Use only courses available to your own account.")
+    return
     
     headers = {
         'accept-encoding': 'gzip',
@@ -1734,6 +1737,9 @@ async def appxwp_callback(bot, callback_query):
 
 
 async def process_appxwp(bot: Client, m: Message, user_id: int):
+    # Legacy unauthenticated fallback / DRM-link extraction is disabled.
+    await m.reply_text("Appx export is temporarily disabled while the authorized-account exporter is being implemented. Use only courses available to your own account.")
+    return
 
     loop = asyncio.get_event_loop()
     CONNECTOR = aiohttp.TCPConnector(limit=100, loop=loop)
