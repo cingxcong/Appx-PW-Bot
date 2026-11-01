@@ -1,11 +1,25 @@
+"""Runtime configuration.
+
+All credentials must be supplied through environment variables.
+Do not put live Telegram credentials or user session tokens in source control.
+"""
 import os
 
-api_id = int(os.environ.get("API_ID", 20821267))
-api_hash = os.environ.get("API_HASH", "8723cdf433be176300044547ee6bab7a")
-bot_token = os.environ.get("BOT_TOKEN", "7757892840:AAHtk7qVt9r55Ovm-eYW71f1_ohNMdvUohc")
-auth_users = [int(x.strip()) for x in os.environ.get("AUTH_USERS", "7894095051").split(",") if x.strip().isdigit()]
 
-if not api_id: raise ValueError("Set API_ID env var!")
-if not api_hash: raise ValueError("Set API_HASH env var!")
-if not bot_token: raise ValueError("Set BOT_TOKEN env var!")
-if not auth_users: raise ValueError("Set AUTH_USERS env var!")
+def _required(name: str) -> str:
+    value = os.environ.get(name, "").strip()
+    if not value:
+        raise RuntimeError(f"Required environment variable {name} is not set")
+    return value
+
+
+api_id = int(_required("API_ID"))
+api_hash = _required("API_HASH")
+bot_token = _required("BOT_TOKEN")
+auth_users = [
+    int(value.strip())
+    for value in _required("AUTH_USERS").split(",")
+    if value.strip().isdigit()
+]
+if not auth_users:
+    raise RuntimeError("AUTH_USERS must contain at least one numeric Telegram user ID")
