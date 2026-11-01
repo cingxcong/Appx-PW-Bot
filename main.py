@@ -526,11 +526,16 @@ async def process_pwwp(bot: Client, m: Message, user_id: int):
                     await editable.edit("**Timeout! You took too long to respond**")
                     return
 
+                pw_client_secret = os.environ.get("PW_CLIENT_SECRET", "").strip()
+                if not pw_client_secret:
+                    await editable.edit("PW_CLIENT_SECRET is not configured on the server.")
+                    return
+
                 payload = {
                     "username": phone,
                     "otp": otp,
                     "client_id": "system-admin",
-                    "client_secret": "KjPXuAVfC5xbmgreETNMaL7z",
+                    "client_secret": pw_client_secret,
                     "grant_type": "password",
                     "organizationId": "5eb393ee95fab7468a79d189",
                     "latitude": 0,
@@ -842,7 +847,7 @@ async def get_cpwp_course_content(session: aiohttp.ClientSession, headers: Dict[
 
                     if url_val.endswith(("master.m3u8", "playlist.m3u8")) and url_val not in fetched_urls:
                         fetched_urls.add(url_val)
-                        headers2 = { 'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9'}
+                        headers2 = dict(headers)
                         task = asyncio.create_task(process_cpwp_url(url_val, name, session, headers2))
                         content_tasks.append((content['id'], task))
                         
